@@ -12,19 +12,24 @@ import org.junit.Test;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.lang.System.getenv;
+import static java.util.Optional.ofNullable;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class RemoteFilesProdCheck {
-    private static final String S3_DATASHARE_BUCKET_NAME = "datashare-nlp";
-    private static final String S3_DATASHARE_ENDPOINT = "https://icij.org";
-    private static final String S3_REGION = "us-east-1";
+    private static final String S3_DATASHARE_BUCKET_NAME = ofNullable(getenv("CHECK_S3_BUCKET_NAME")).orElse("datashare-nlp");
+    private static final String S3_DATASHARE_ENDPOINT = ofNullable(getenv("CHECK_S3_ENDPOINT")).orElse("https://icij.org");
+    private static final String S3_REGION = ofNullable(getenv("CHECK_S3_REGION")).orElse("us-east-1");
+    public static final String S3_PATH = ofNullable(getenv("CHECK_S3_PATH")).orElse("dist/test/dir1/");
+
     private static final int READ_TIMEOUT_MS = 120 * 1000;
     private static final int CONNECTION_TIMEOUT_MS = 30 * 1000;
+
     AmazonS3 s3client = getDefault();
 
     @Test
     public void test_directory_listing() {
-        ObjectListing objectListing = s3client.listObjects(S3_DATASHARE_BUCKET_NAME, "dist/test/dir1/");
+        ObjectListing objectListing = s3client.listObjects(S3_DATASHARE_BUCKET_NAME, S3_PATH);
         List<S3ObjectSummary> s3ObjectSummaries = objectListing.getObjectSummaries().stream().filter(os -> os.getSize() != 0).collect(Collectors.toList());
 
         assertThat(s3ObjectSummaries.size()).isEqualTo(1);
