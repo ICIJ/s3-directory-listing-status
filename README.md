@@ -18,6 +18,8 @@ It builds an auto-executable jar that can be run like this :
 $ java -jar target/s3-directory-listing-status-1.0-jar-with-dependencies.jar
 ```
 
+It returns the number of failing tests. So 0 if success.
+
 It checks the CDN for datashare NLP libraries. You can change the following parameters with environment variables :
 
 * `CHECK_S3_BUCKET_NAME` : S3 bucket name
